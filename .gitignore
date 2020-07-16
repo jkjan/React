@@ -1,0 +1,9 @@
+.cache/
+dist/
+.idea/
+node_modules/
+public/
+*.json
+*.svg
+*.png
+*.jpg
