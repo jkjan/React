@@ -4,6 +4,8 @@ import UserList from "./ListTags";
 import CreateUser from "./CreateUser";
 
 function ArrayManager() {
+    const nameInput = useRef();
+    const nextId = useRef(4);
     const [user, setUser] = useState({
         name: '',
         email: '',
@@ -28,43 +30,51 @@ function ArrayManager() {
     ]);
 
     const onChange = (e) => {
-        console.log(e.target.name, e.target.value);
         setUser({
             ...user,
             [e.target.name]: e.target.value,
         })
     };
 
+    const onModify = (idx, modified) => {
+        userList[idx] = modified
+        setUserList(userList);
+    }
+
     const onClear = () => {
         setUser({
             name: '',
             email: '',
         });
-        ref.current.focus();
+        nameInput.current.focus();
     };
 
     const onSubmit = () => {
         setUserList(userList.concat({
-            id : userList.length-1,
-            ...user}));
+            id : nextId.current,
+            ...user,
+        }));
+
         setUser({
             name:'',
             email:'',
         })
+
+        nameInput.current.focus();
+        nextId.current++;
     };
 
-    const ref = useRef();
-
-    const onRemove = id => {
-        console.log(id);
-        setUserList(userList.filter(user => user.id !== id));
+    const onRemove = (idx) => {
+        setUserList(
+            userList.slice(0, idx).concat(userList.slice(idx+1))
+        );
     };
 
     return (
         <div>
-            <CreateUser user={user} onChange={onChange} onClear={onClear} onSubmit={onSubmit}/>
+            <CreateUser nameInput={nameInput} user={user} onChange={onChange} onClear={onClear} onSubmit={onSubmit}/>
             <ul className="jeongin">
-                <UserList users={userList} onRemove={onRemove}/>
+                <UserList users={userList} onRemove={onRemove} onModify={onModify}/>
             </ul>
         </div>
     );
